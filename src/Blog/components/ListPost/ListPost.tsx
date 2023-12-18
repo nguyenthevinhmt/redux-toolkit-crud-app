@@ -1,13 +1,17 @@
-import { initalPostList } from "../../../constants/blog";
+import { useSelector } from "react-redux";
 import PostItem from "../PostItem/PostItem";
+import { RootState } from "../../../redux/store";
+import { useDispatch } from "react-redux";
+import { deletePost, startEditingPost } from "../blog.reducer";
 
 export default function ListPost() {
-  const postList = initalPostList;
+  const postList = useSelector((state: RootState) => state.blog.postList);
+  const dispatch = useDispatch();
   const handleDelete = (postId: string) => {
-    // dispatch(deletePost(postId))
+    dispatch(deletePost(postId));
   };
   const handleStartEditing = (postId: string) => {
-    // dispatch(startEditingPost(postId))
+    dispatch(startEditingPost(postId));
   };
   return (
     <div>
@@ -19,7 +23,13 @@ export default function ListPost() {
           justifyContent: "center",
         }}
       >
-        <div style={{ alignItems: "center", justifyContent: "center" }}>
+        <div
+          style={{
+            alignItems: "center",
+            justifyContent: "center",
+            textAlign: "center",
+          }}
+        >
           <h2 className="mb-4 text-center text-2xl font-bold text-gray-800 md:mb-6 lg:text-3xl">
             BLOG
           </h2>

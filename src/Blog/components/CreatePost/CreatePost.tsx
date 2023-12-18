@@ -1,8 +1,12 @@
 import { Button, Form, Input, DatePicker } from "antd";
 import IBlog from "../../../models/blog.model";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { nanoid } from "nanoid";
 import dayjs, { Dayjs } from "dayjs";
+import { useDispatch } from "react-redux";
+import { addPost } from "../blog.reducer";
+import { useSelector } from "react-redux";
+import { RootState } from "../../../redux/store";
 
 const initialState: IBlog = {
   title: "",
@@ -12,8 +16,19 @@ const initialState: IBlog = {
 };
 const CreatePost: React.FC = () => {
   const [form] = Form.useForm();
+  const dispatch = useDispatch();
   const [formData, setFormData] = useState<IBlog>(initialState);
   const { title, description, publishDate } = formData;
+
+  const editingPost = useSelector((state: RootState) => {
+    return state.blog.editingPost;
+  });
+
+  useEffect(() => {
+    console.log(editingPost);
+    setFormData(editingPost || initialState);
+  }, [editingPost]);
+
   const handleTitleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData((prev: IBlog) => ({ ...prev, title: e.target.value }));
   };
@@ -27,11 +42,12 @@ const CreatePost: React.FC = () => {
       setFormData((prev) => ({ ...prev, publishDate: date.toString() }));
     }
   };
+
   const onFinish = () => {
-    // Xử lý khi submit form
-    console.log(formData);
+    dispatch(addPost(formData));
     form.resetFields();
   };
+
   return (
     <div
       style={{
@@ -61,7 +77,11 @@ const CreatePost: React.FC = () => {
           name="title"
           rules={[{ required: true, message: "Please input your blog title!" }]}
         >
-          <Input value={title} onChange={handleTitleChange} />
+          <Input
+            value={title}
+            placeholder="Enter your title blog...."
+            onChange={handleTitleChange}
+          />
         </Form.Item>
 
         <Form.Item<IBlog>
@@ -71,7 +91,11 @@ const CreatePost: React.FC = () => {
             { required: true, message: "Please input your blog description!" },
           ]}
         >
-          <Input value={description} onChange={handleDescriptionChange} />
+          <Input
+            value={description}
+            placeholder="Enter your description blog...."
+            onChange={handleDescriptionChange}
+          />
         </Form.Item>
 
         <Form.Item<IBlog>
